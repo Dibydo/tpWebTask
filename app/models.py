@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from random import sample
 
+from django.urls import reverse
+
 
 class ProfileManager(models.Manager):
     def sample_profile(self, count):
@@ -13,7 +15,7 @@ class ProfileManager(models.Manager):
 
 class Profile(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, null=True, verbose_name='Profile')
-    avatar = models.ImageField(default='img/no_avatar.jpg', upload_to='static/avatar/%y/%m/%d', verbose_name='Avatar')
+    avatar = models.ImageField(default='img/no_avatar.jpg', upload_to='avatar/%y/%m/%d', verbose_name='Avatar')
 
     objects = ProfileManager()
 
@@ -42,6 +44,9 @@ class Tag(models.Model):
     rating = models.IntegerField(default=0, verbose_name='Rating')
 
     objects = TagManager()
+
+    def get_url(self):
+        return reverse('questions_by_tag', kwargs={'tag_name': self.tag})
 
     def __str__(self):
         return self.tag
@@ -78,8 +83,13 @@ class Question(models.Model):
     def __str__(self):
         return self.title
 
+    def get_url(self):
+        return reverse('question', kwargs={'question_id': self.id})
+
     def get_tags(self):
         return self.tags
+
+    # def get_user_mind(self): получить мнение пользователя по вопросу: лайк/дизлайк/ничего
 
     class Meta:
         verbose_name = 'Question'
@@ -183,7 +193,7 @@ class LikeQuestion(models.Model):
 class LikeAnswer(models.Model):
     answer_id = models.ForeignKey('Answer', on_delete=models.CASCADE, verbose_name='Answer')
     profile_id = models.ForeignKey('Profile', on_delete=models.CASCADE, verbose_name='Profile')
-    is_like = models.BooleanField(default=True, verbose_name='Like or dislike')
+    is_like = models.BooleanField(default=False, verbose_name='Like or dislike')
 
     def __str__(self):
         action = 'Disliked'

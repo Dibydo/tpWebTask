@@ -180,5 +180,6 @@ class Command(BaseCommand):
 
 creator = Command()
 print("Created creator\n")
-creator.fill_db(10000)
+#creator.fill_db(10000)
+creator.fill_db(100)
 print("Successfully filled\n")
