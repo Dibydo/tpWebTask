@@ -47,7 +47,6 @@ class Command(BaseCommand):
     def fill_profiles(profile_count, avatar_count=5):
         profile_counter = 0
         while profile_counter < profile_count:
-            print(f"Profile progress [{profile_counter} / {profile_count}]")
             try:
                 Profile.objects.create(
                     user_id=User.objects.create_user(
@@ -55,7 +54,7 @@ class Command(BaseCommand):
                         email=faker.email(),
                         password="1"
                     ),
-                    avatar="static/img/avatar_" + str(profile_counter % avatar_count) + ".jpg",
+                    avatar="img/avatar_" + str(profile_counter % avatar_count) + ".jpg",
                 )
                 profile_counter += 1
             except Exception:
@@ -65,7 +64,6 @@ class Command(BaseCommand):
     def fill_tags(tag_count):
         tags_counter = 0
         while tags_counter < tag_count:
-            print(f"Tags progress [{tags_counter} / {tag_count}]")
             try:
                 tag = faker.word() + '_' + faker.word()
                 Tag.objects.create(tag=tag)
@@ -83,7 +81,6 @@ class Command(BaseCommand):
         tag_ids = list(Tag.objects.values_list('tag', flat=True))
 
         for i in range(question_count):
-            print(f"Questions progress [{i} / {question_count}]")
             tags_list = sample(tag_ids, randint(1, question_tags_max))
             Question.objects.create(
                 profile_id=Profile.objects.get(pk=choice(profile_ids)),
@@ -104,7 +101,6 @@ class Command(BaseCommand):
             )
         )
         for i in range(answer_count):
-            print(f"Answers progress [{i} / {answer_count}]")
             Answer.objects.create(
                 profile_id=Profile.objects.get(pk=choice(profile_ids)),
                 question_id=Question.objects.get(pk=choice(question_ids)),
@@ -126,7 +122,6 @@ class Command(BaseCommand):
         )
         i = 0
         while i < like_and_dislike_count:
-            print(f"Question rating progress [{i} / {like_and_dislike_count}]")
             try:
                 LikeQuestion.objects.create(
                     profile_id=Profile.objects.get(pk=choice(profile_ids)),
@@ -151,7 +146,6 @@ class Command(BaseCommand):
         )
         i = 0
         while i < like_and_dislike_count:
-            print(f"Answer rating progress [{i} / {like_and_dislike_count}]")
             try:
                 LikeAnswer.objects.create(
                     profile_id=Profile.objects.get(pk=choice(profile_ids)),
@@ -163,22 +157,9 @@ class Command(BaseCommand):
                 pass
 
     def fill_db(self, cnt):
-        print("Started filling\n")
         self.fill_profiles(cnt)
-        print("Filled profiles\n")
-        self.fill_tags(cnt)
-        print("Filled tags\n")
-        self.fill_questions(10 * cnt)
-        print("Filled questions\n")
-        self.fill_answers(100 * cnt)
-        print("Filled answers\n")
-        self.fill_likes_dislikes_questions(100 * cnt)
-        print("Filled question ratings\n")
-        self.fill_likes_dislikes_answers(100 * cnt)
-        print("Filled answers ratings\n")
-
-
-creator = Command()
-print("Created creator\n")
-creator.fill_db(10000)
-print("Successfully filled\n")
+        self.fill_tags(cnt // 2)
+        self.fill_questions(3 * cnt)
+        self.fill_answers(10 * cnt)
+        self.fill_likes_dislikes_questions(5 * cnt)
+        self.fill_likes_dislikes_answers(20 * cnt)
